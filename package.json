@@ -1,0 +1,16 @@
+{
+  "name": "dex-rewards-subgraph",
+  "version": "0.1.0",
+  "scripts": {
+    "create": "graph create benesjan/dex-rewards-subgraph --node https://api.thegraph.com/deploy/",
+    "create-local": "graph create benesjan/dex-rewards-subgraph --node http://127.0.0.1:8020",
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy --debug --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ benesjan/dex-rewards-subgraph",
+    "deploy-local": "graph deploy benesjan/dex-rewards-subgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "^0.18.0",
+    "@graphprotocol/graph-ts": "^0.18.1"
+  }
+}
