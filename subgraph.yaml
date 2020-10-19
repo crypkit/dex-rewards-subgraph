@@ -1,0 +1,25 @@
+specVersion: 0.0.2
+description: Dex Rewards Subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: BalTokenContract
+    network: mainnet
+    source:
+      address: '0xba100000625a3754423978a60c9317c58a424e3d'
+      abi: ERC20
+      startBlock: 10299683
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Transfer
+      abis:
+        - name: ERC20
+          file: ./abis/erc20.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+      file: ./src/balancer-mapping.ts

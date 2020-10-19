@@ -1,0 +1,15 @@
+enum Exchange {
+  UNI_V2
+  BALANCER
+}
+
+type Reward @entity {
+  id: ID! # hash of transaction in which the event was emitted
+  exchange: Exchange!
+  pool: Bytes # pool address - null in Balancer because I am not able to
+#  distinguish between specific user pools
+  amount: BigInt!
+  user: Bytes!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+}
