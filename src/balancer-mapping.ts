@@ -10,7 +10,7 @@ export function handleTransfer(event: Transfer): void {
     if (event.transaction.from == txOriginator && event.params.from == disperseApp) {
         // Filter for events which were emitted in a tx originating from
         // BAL team and the event's from address has to point to Disperse.app
-        let reward = new Reward(event.params.to.toHexString() + "-" + event.block.timestamp.toString())
+        let reward = new Reward(event.params.to.toHexString() + "-" + event.logIndex.toString())
         reward.exchange = "BALANCER"
         reward.amount = event.params.value
         reward.user = event.params.to

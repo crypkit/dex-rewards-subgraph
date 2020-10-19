@@ -13,3 +13,24 @@ type Reward @entity {
   blockNumber: BigInt!
   blockTimestamp: BigInt!
 }
+
+# The following are only for Uniswap
+type StakedEvent @entity {
+  id: ID! # hash of transaction in which the event was emitted
+  exchange: Exchange!
+  pool: Bytes
+  amount: BigInt!
+  user: Bytes!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+}
+
+type WithdrawnEvent @entity {
+  id: ID! # hash of transaction in which the event was emitted
+  exchange: Exchange!
+  pool: Bytes
+  amount: BigInt!
+  user: Bytes!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+}

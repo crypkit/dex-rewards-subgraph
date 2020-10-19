@@ -23,3 +23,107 @@ dataSources:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
       file: ./src/balancer-mapping.ts
+  - kind: ethereum/contract
+    name: UniStakingRewardsETH/WBTC
+    network: mainnet
+    source:
+      address: '0xca35e32e7926b96a9988f61d510e038108d8068e'
+      abi: StakingRewards
+      startBlock: 10875196
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Staked
+        - Withdrawn
+        - RewardPaid
+      abis:
+        - name: StakingRewards
+          file: ./abis/stakingrewards.json
+      eventHandlers:
+        - event: Staked(indexed address,uint256)
+          handler: handleStaked
+        - event: Withdrawn(indexed address,uint256)
+          handler: handleWithdrawn
+        - event: RewardPaid(indexed address,uint256)
+          handler: handleRewardPaid
+      file: ./src/uni-v2-mapping.ts
+  - kind: ethereum/contract
+    name: UniStakingRewardsETH/USDC
+    network: mainnet
+    source:
+      address: '0x7fba4b8dc5e7616e59622806932dbea72537a56b'
+      abi: StakingRewards
+      startBlock: 10875196
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Staked
+        - Withdrawn
+        - RewardPaid
+      abis:
+        - name: StakingRewards
+          file: ./abis/stakingrewards.json
+      eventHandlers:
+        - event: Staked(indexed address,uint256)
+          handler: handleStaked
+        - event: Withdrawn(indexed address,uint256)
+          handler: handleWithdrawn
+        - event: RewardPaid(indexed address,uint256)
+          handler: handleRewardPaid
+      file: ./src/uni-v2-mapping.ts
+  - kind: ethereum/contract
+    name: UniStakingRewardsETH/USDT
+    network: mainnet
+    source:
+      address: '0x6c3e4cb2e96b01f4b866965a91ed4437839a121a'
+      abi: StakingRewards
+      startBlock: 10875196
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Staked
+        - Withdrawn
+        - RewardPaid
+      abis:
+        - name: StakingRewards
+          file: ./abis/stakingrewards.json
+      eventHandlers:
+        - event: Staked(indexed address,uint256)
+          handler: handleStaked
+        - event: Withdrawn(indexed address,uint256)
+          handler: handleWithdrawn
+        - event: RewardPaid(indexed address,uint256)
+          handler: handleRewardPaid
+      file: ./src/uni-v2-mapping.ts
+  - kind: ethereum/contract
+    name: UniStakingRewardsETH/DAI
+    network: mainnet
+    source:
+      address: '0xa1484c3aa22a66c62b77e0ae78e15258bd0cb711'
+      abi: StakingRewards
+      startBlock: 10875196
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Staked
+        - Withdrawn
+        - RewardPaid
+      abis:
+        - name: StakingRewards
+          file: ./abis/stakingrewards.json
+      eventHandlers:
+        - event: Staked(indexed address,uint256)
+          handler: handleStaked
+        - event: Withdrawn(indexed address,uint256)
+          handler: handleWithdrawn
+        - event: RewardPaid(indexed address,uint256)
+          handler: handleRewardPaid
+      file: ./src/uni-v2-mapping.ts
