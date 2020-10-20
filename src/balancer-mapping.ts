@@ -14,6 +14,7 @@ export function handleTransfer(event: Transfer): void {
         reward.exchange = "BALANCER"
         reward.amount = event.params.value
         reward.user = event.params.to
+        reward.transaction = event.transaction.hash
         reward.blockNumber = event.block.number
         reward.blockTimestamp = event.block.timestamp
         reward.save()

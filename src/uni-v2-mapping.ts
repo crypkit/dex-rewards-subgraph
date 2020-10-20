@@ -25,6 +25,7 @@ export function handleRewardPaid(event: RewardPaid): void {
     reward.pool = Address.fromString(poolPairMap.get(event.transaction.to.toHexString()))
     reward.amount = event.params.reward
     reward.user = event.params.user
+    reward.transaction = event.transaction.hash
     reward.blockNumber = event.block.number
     reward.blockTimestamp = event.block.timestamp
     reward.save()
@@ -36,6 +37,7 @@ export function handleStaked(event: Staked): void {
     staked.pool = Address.fromString(poolPairMap.get(event.transaction.to.toHexString()))
     staked.amount = event.params.amount
     staked.user = event.params.user
+    staked.transaction = event.transaction.hash
     staked.blockNumber = event.block.number
     staked.blockTimestamp = event.block.timestamp
     staked.save()
@@ -47,6 +49,7 @@ export function handleWithdrawn(event: Withdrawn): void {
     withdrawn.pool = Address.fromString(poolPairMap.get(event.transaction.to.toHexString()))
     withdrawn.amount = event.params.amount
     withdrawn.user = event.params.user
+    withdrawn.transaction = event.transaction.hash
     withdrawn.blockNumber = event.block.number
     withdrawn.blockTimestamp = event.block.timestamp
     withdrawn.save()

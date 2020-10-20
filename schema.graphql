@@ -10,6 +10,7 @@ type Reward @entity {
 #  distinguish between specific user pools
   amount: BigInt!
   user: Bytes!
+  transaction: Bytes!
   blockNumber: BigInt!
   blockTimestamp: BigInt!
 }
@@ -21,6 +22,7 @@ type StakedEvent @entity {
   pool: Bytes
   amount: BigInt!
   user: Bytes!
+  transaction: Bytes!
   blockNumber: BigInt!
   blockTimestamp: BigInt!
 }
@@ -31,6 +33,7 @@ type WithdrawnEvent @entity {
   pool: Bytes
   amount: BigInt!
   user: Bytes!
+  transaction: Bytes!
   blockNumber: BigInt!
   blockTimestamp: BigInt!
 }
