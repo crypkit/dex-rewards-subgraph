@@ -1,9 +1,9 @@
 import {Address} from "@graphprotocol/graph-ts"
-import {Reward, StakedEvent, WithdrawnEvent} from "../generated/schema";
 import {
     RewardPaid,
     Staked, Withdrawn
 } from "../generated/UniStakingRewards/StakingRewards";
+import {Transaction} from "../generated/schema";
 
 // The following syntax is not supported - probably outdated typescript version in graph-cli
 // let poolPairMap = new Map<string, string>([
@@ -20,8 +20,9 @@ poolPairMap.set("0x6c3e4cb2e96b01f4b866965a91ed4437839a121a", "0x0d4a11d5eeaac28
 poolPairMap.set("0xa1484c3aa22a66c62b77e0ae78e15258bd0cb711", "0xa478c2975ab1ea89e8196811f51a7b7ade33eb11")
 
 export function handleRewardPaid(event: RewardPaid): void {
-    let reward = new Reward(event.params.user.toHexString() + "-" + event.logIndex.toString())
+    let reward = new Transaction(event.transaction.hash.toHexString() + "-" + event.logIndex.toString())
     reward.exchange = "UNI_V2"
+    reward.event = "REWARD_PAID"
     reward.pool = Address.fromString(poolPairMap.get(event.transaction.to.toHexString()))
     reward.amount = event.params.reward
     reward.user = event.params.user
@@ -31,8 +32,9 @@ export function handleRewardPaid(event: RewardPaid): void {
 }
 
 export function handleStaked(event: Staked): void {
-    let staked = new StakedEvent(event.params.user.toHexString() + "-" + event.logIndex.toString())
+    let staked = new Transaction(event.transaction.hash.toHexString() + "-" + event.logIndex.toString())
     staked.exchange = "UNI_V2"
+    staked.event = "STAKE"
     staked.pool = Address.fromString(poolPairMap.get(event.transaction.to.toHexString()))
     staked.amount = event.params.amount
     staked.user = event.params.user
@@ -42,8 +44,9 @@ export function handleStaked(event: Staked): void {
 }
 
 export function handleWithdrawn(event: Withdrawn): void {
-    let withdrawn = new WithdrawnEvent(event.params.user.toHexString() + "-" + event.logIndex.toString())
+    let withdrawn = new Transaction(event.transaction.hash.toHexString() + "-" + event.logIndex.toString())
     withdrawn.exchange = "UNI_V2"
+    withdrawn.event = "WITHDRAWN"
     withdrawn.pool = Address.fromString(poolPairMap.get(event.transaction.to.toHexString()))
     withdrawn.amount = event.params.amount
     withdrawn.user = event.params.user
