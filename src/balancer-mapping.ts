@@ -2,6 +2,7 @@ import {Address} from "@graphprotocol/graph-ts"
 import {Transfer} from "../generated/BalTokenContract/ERC20";
 import {Reward} from "../generated/schema";
 import {BigDecimal} from "@graphprotocol/graph-ts/index";
+import {updateCurrentBlock} from "./block-update";
 
 let txOriginator = Address.fromString("0xcb3d284995e2ed50f8e9971718f2166a95ff83c2")
 let disperseApp = Address.fromString("0xd152f549545093347a162dce210e7293f1452150")
@@ -26,4 +27,5 @@ export function handleTransfer(event: Transfer): void {
         reward.blockTimestamp = event.block.timestamp
         reward.save()
     }
+    updateCurrentBlock(event.block.number, event.block.timestamp)
 }
