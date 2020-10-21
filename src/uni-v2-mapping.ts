@@ -58,9 +58,11 @@ export function handleStaked(event: Staked): void {
     snapshot.user = stakePosition.user
     snapshot.pool = stakePosition.pool
     snapshot.liquidityTokenBalance = stakePosition.liquidityTokenBalance
-    snapshot.transaction = event.transaction.hash
     snapshot.blockNumber = event.block.number
     snapshot.blockTimestamp = event.block.timestamp
+    snapshot.txHash = event.transaction.hash
+    snapshot.txGasUsed = event.transaction.gasUsed
+    snapshot.txGasPrice = event.transaction.gasPrice
 
     snapshot.save()
 }
@@ -75,9 +77,11 @@ export function handleWithdrawn(event: Withdrawn): void {
     snapshot.user = stakePosition.user
     snapshot.pool = stakePosition.pool
     snapshot.liquidityTokenBalance = stakePosition.liquidityTokenBalance
-    snapshot.transaction = event.transaction.hash
     snapshot.blockNumber = event.block.number
     snapshot.blockTimestamp = event.block.timestamp
+    snapshot.txHash = event.transaction.hash
+    snapshot.txGasUsed = event.transaction.gasUsed
+    snapshot.txGasPrice = event.transaction.gasPrice
 
     snapshot.save()
 }

@@ -30,7 +30,10 @@ type StakePositionSnapshot @entity {
   user: Bytes!
   pool: Bytes!
   liquidityTokenBalance: BigDecimal!
-  transaction: Bytes!
   blockNumber: BigInt!
   blockTimestamp: BigInt!
+  # Allows for computing gas costs:
+  txHash: Bytes!
+  txGasUsed: BigInt!
+  txGasPrice: BigInt!
 }
