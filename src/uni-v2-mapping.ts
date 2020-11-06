@@ -1,15 +1,6 @@
 import {Address, BigDecimal, BigInt, log} from "@graphprotocol/graph-ts"
-import {
-    CurrentBlock,
-    Reward,
-    StakePosition,
-    StakePositionSnapshot
-} from "../generated/schema";
-import {
-    RewardPaid,
-    Staked,
-    Withdrawn
-} from "../generated/UniStakingRewards/StakingRewards";
+import {Reward, StakePosition, StakePositionSnapshot} from "../generated/schema";
+import {RewardPaid, Staked, Withdrawn} from "../generated/UniStakingRewardsETH/DAI/StakingRewards";
 import {updateCurrentBlock} from "./block-update";
 
 
@@ -31,7 +22,7 @@ function getPool(address: Address | null): Address | null {
     if (address == Address.fromString("0xa1484c3aa22a66c62b77e0ae78e15258bd0cb711")) {
         return Address.fromString("0xa478c2975ab1ea89e8196811f51a7b7ade33eb11")
     }
-    log.warning("Unknown pool address", []);
+    log.error("Unknown pool address", []);
     return null
 }
 
@@ -42,7 +33,7 @@ export function handleRewardPaid(event: RewardPaid): void {
         .concat(event.logIndex.toString())
     let reward = new Reward(id)
     reward.exchange = "UNI_V2"
-    reward.pool = getPool(event.transaction.to)
+    reward.pool = getPool(event.address)
     reward.amount = event.params.reward.toBigDecimal().times(DENOMINATION)
     reward.user = event.params.user
     reward.transaction = event.transaction.hash
@@ -53,7 +44,7 @@ export function handleRewardPaid(event: RewardPaid): void {
 }
 
 export function handleStaked(event: Staked): void {
-    let poolId = <Address>getPool(event.transaction.to)
+    let poolId = <Address>getPool(event.address)
     let stakePosition = updateStakePosition(poolId, event.params.user, event.params.amount)
     let snapshot = new StakePositionSnapshot(stakePosition.id.concat(event.logIndex.toString()))
 
@@ -72,7 +63,7 @@ export function handleStaked(event: Staked): void {
 }
 
 export function handleWithdrawn(event: Withdrawn): void {
-    let poolId = <Address>getPool(event.transaction.to)
+    let poolId = <Address>getPool(event.address)
     let amount = event.params.amount.times(BigInt.fromI32(-1))
     let stakePosition = updateStakePosition(poolId, event.params.user, amount)
     let snapshot = new StakePositionSnapshot(stakePosition.id.concat(event.logIndex.toString()))
