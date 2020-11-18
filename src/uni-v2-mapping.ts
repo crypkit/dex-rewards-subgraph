@@ -1,7 +1,6 @@
 import {Address, BigDecimal, BigInt, log} from "@graphprotocol/graph-ts"
 import {Reward, StakePosition, StakePositionSnapshot} from "../generated/schema";
 import {RewardPaid, Staked, Withdrawn} from "../generated/UniStakingRewardsETH/DAI/StakingRewards";
-import {updateCurrentBlock} from "./block-update";
 
 
 // The coefficient by which I have to multiply to get the basic units of UNI and LP tokens
@@ -40,7 +39,6 @@ export function handleRewardPaid(event: RewardPaid): void {
     reward.blockNumber = event.block.number
     reward.blockTimestamp = event.block.timestamp
     reward.save()
-    updateCurrentBlock(event.block.number, event.block.timestamp)
 }
 
 export function handleStaked(event: Staked): void {
@@ -59,7 +57,6 @@ export function handleStaked(event: Staked): void {
     snapshot.txGasPrice = event.transaction.gasPrice
 
     snapshot.save()
-    updateCurrentBlock(event.block.number, event.block.timestamp)
 }
 
 export function handleWithdrawn(event: Withdrawn): void {
@@ -79,8 +76,6 @@ export function handleWithdrawn(event: Withdrawn): void {
     snapshot.txGasPrice = event.transaction.gasPrice
 
     snapshot.save()
-
-    updateCurrentBlock(event.block.number, event.block.timestamp)
 }
 
 function updateStakePosition(poolId: Address, user: Address, balanceChange: BigInt): StakePosition {

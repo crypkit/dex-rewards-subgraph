@@ -37,9 +37,3 @@ type StakePositionSnapshot @entity {
   txGasUsed: BigInt!
   txGasPrice: BigInt!
 }
-
-type CurrentBlock @entity {
-  id: ID!
-  number: BigInt!
-  timestamp: BigInt!
-}
