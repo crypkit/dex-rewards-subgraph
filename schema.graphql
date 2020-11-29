@@ -1,6 +1,7 @@
 enum Exchange {
   UNI_V2
   BALANCER
+  SUSHI
 }
 
 type Reward @entity {
@@ -36,4 +37,14 @@ type StakePositionSnapshot @entity {
   txHash: Bytes!
   txGasUsed: BigInt!
   txGasPrice: BigInt!
+}
+
+type SushiPool @entity {
+  id: ID! # pid from the MasterChef contract (index in the poolInfo array)
+  address: Bytes!
+}
+
+type LatestSushiId @entity {
+  id: ID! # id is set to latest
+  pid: BigInt!
 }

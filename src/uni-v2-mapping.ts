@@ -1,10 +1,8 @@
 import {Address, BigDecimal, BigInt, log} from "@graphprotocol/graph-ts"
 import {Reward, StakePosition, StakePositionSnapshot} from "../generated/schema";
 import {RewardPaid, Staked, Withdrawn} from "../generated/UniStakingRewardsETH/DAI/StakingRewards";
+import {DENOMINATION, updateStakePosition} from "./shared";
 
-
-// The coefficient by which I have to multiply to get the basic units of UNI and LP tokens
-let DENOMINATION = BigDecimal.fromString("0.000000000000000001")
 
 // For some reason I could not get map working properly, so I am using this function
 // as a workaround
@@ -43,7 +41,7 @@ export function handleRewardPaid(event: RewardPaid): void {
 
 export function handleStaked(event: Staked): void {
     let poolId = <Address>getPool(event.address)
-    let stakePosition = updateStakePosition(poolId, event.params.user, event.params.amount)
+    let stakePosition = updateStakePosition(poolId, event.params.user, event.params.amount, "UNI_V2")
     let snapshot = new StakePositionSnapshot(stakePosition.id.concat(event.logIndex.toString()))
 
     snapshot.exchange = stakePosition.exchange
@@ -62,7 +60,7 @@ export function handleStaked(event: Staked): void {
 export function handleWithdrawn(event: Withdrawn): void {
     let poolId = <Address>getPool(event.address)
     let amount = event.params.amount.times(BigInt.fromI32(-1))
-    let stakePosition = updateStakePosition(poolId, event.params.user, amount)
+    let stakePosition = updateStakePosition(poolId, event.params.user, amount, "UNI_V2")
     let snapshot = new StakePositionSnapshot(stakePosition.id.concat(event.logIndex.toString()))
 
     snapshot.exchange = stakePosition.exchange
@@ -76,28 +74,4 @@ export function handleWithdrawn(event: Withdrawn): void {
     snapshot.txGasPrice = event.transaction.gasPrice
 
     snapshot.save()
-}
-
-function updateStakePosition(poolId: Address, user: Address, balanceChange: BigInt): StakePosition {
-    let id = poolId
-        .toHexString()
-        .concat('-')
-        .concat(user.toHexString())
-    let stakePosition = StakePosition.load(id)
-    let convertedBalance = balanceChange.toBigDecimal()
-    let balanceChange_ = convertedBalance.times(DENOMINATION)
-    if (stakePosition === null) {
-        if (balanceChange <= BigInt.fromI32(0)) {
-            log.error("Negative balance change on stakePosition creation", [])
-        }
-        stakePosition = new StakePosition(id)
-        stakePosition.exchange = "UNI_V2"
-        stakePosition.user = user
-        stakePosition.pool = poolId
-        stakePosition.liquidityTokenBalance = balanceChange_
-    } else {
-        stakePosition.liquidityTokenBalance = stakePosition.liquidityTokenBalance.plus(balanceChange_)
-    }
-    stakePosition.save()
-    return stakePosition as StakePosition
 }
