@@ -1,5 +1,5 @@
 import {Address, BigInt, log} from "@graphprotocol/graph-ts/index";
-import {Reward, SushiTxPoolMap} from "../generated/schema";
+import {Reward} from "../generated/schema";
 import {Deposit, Withdraw} from "../generated/MasterChef/MasterChef";
 import {Transfer} from "../generated/SushiToken/ERC20";
 import {DENOMINATION, saveSnapshot, updateStakePosition} from "./shared";
@@ -16,20 +16,13 @@ export function handleDeposit(event: Deposit): void {
         saveSnapshot(stakePosition, event)
     }
 
-    let mapId = event.transaction.hash.toHexString()
-    let sushiTxPoolMap = SushiTxPoolMap.load(mapId)
-    if (sushiTxPoolMap === null) {
-        sushiTxPoolMap = new SushiTxPoolMap(mapId)
-    } else if (sushiTxPoolMap.pool != poolAddress) {
-        log.warning("Multiple deposits to different pools in 1 tx - map id collision. Tx hash: "
-            .concat(mapId)
-            .concat(", original map's pool address: ")
-            .concat(sushiTxPoolMap.pool.toHexString())
-            .concat(", new address: ")
-            .concat(poolAddress.toHexString()), [])
+    let id = event.transaction.hash.toHexString()
+    let reward = Reward.load(id)
+    if (reward !== null) {
+        // This scenario occurs, when there was no reward paid out during deposit
+        reward.pool = poolAddress;
+        reward.save();
     }
-    sushiTxPoolMap.pool = poolAddress
-    sushiTxPoolMap.save()
 }
 
 export function handleWithdraw(event: Withdraw): void {
@@ -38,15 +31,22 @@ export function handleWithdraw(event: Withdraw): void {
     let amount = event.params.amount.times(BigInt.fromI32(-1))
     let stakePosition = updateStakePosition(poolAddress, event.params.user, amount, "SUSHI")
     saveSnapshot(stakePosition, event)
+    let id = event.transaction.hash.toHexString()
+    let reward = Reward.load(id)
+    if (reward !== null) {
+        // This scenario occurs, when there was no reward paid out during deposit
+        reward.pool = poolAddress;
+        reward.save();
+    }
 }
 
 export function handleTransfer(event: Transfer): void {
     if (event.params.from == MASTER_CHEF_ADDRESS) {
-        let id = event.params.to
-            .toHexString()
-            .concat('-')
-            .concat(event.logIndex.toString())
-        let reward = new Reward(id)
+        let id = event.transaction.hash.toHexString()
+        if (Reward.load(id) !== null) {
+            log.warning("Colliding rewards, id: ".concat(id), [])
+        }
+        let reward = new Reward(event.transaction.hash.toHexString())
         reward.exchange = "SUSHI"
         reward.amount = event.params.value.toBigDecimal().times(DENOMINATION)
         reward.user = event.params.to
