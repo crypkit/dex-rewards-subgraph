@@ -38,3 +38,9 @@ type StakePositionSnapshot @entity {
   txGasUsed: BigInt!
   txGasPrice: BigInt!
 }
+
+# An entity which is used to map sushi reward claim to pool address
+type SushiTxPoolMap @entity {
+  id: ID! # tx hash
+  pool: Bytes!
+}

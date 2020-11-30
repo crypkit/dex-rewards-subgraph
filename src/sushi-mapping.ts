@@ -1,5 +1,5 @@
-import {Address, BigInt} from "@graphprotocol/graph-ts/index";
-import {Reward} from "../generated/schema";
+import {Address, BigInt, log} from "@graphprotocol/graph-ts/index";
+import {Reward, SushiTxPoolMap} from "../generated/schema";
 import {Deposit, Withdraw} from "../generated/MasterChef/MasterChef";
 import {Transfer} from "../generated/SushiToken/ERC20";
 import {DENOMINATION, saveSnapshot, updateStakePosition} from "./shared";
@@ -10,8 +10,26 @@ let MASTER_CHEF_ADDRESS = Address.fromString("0xc2edad668740f1aa35e4d8f227fb8e17
 export function handleDeposit(event: Deposit): void {
     let pid = event.params.pid.toI32()
     let poolAddress = Address.fromString(poolInfo[pid])
-    let stakePosition = updateStakePosition(poolAddress, event.params.user, event.params.amount, "SUSHI")
-    saveSnapshot(stakePosition, event)
+    // There is a lot of deposit calls with 0 amounts because users use this method to claim rewards
+    if (!event.params.amount.equals(BigInt.fromI32(0))) {
+        let stakePosition = updateStakePosition(poolAddress, event.params.user, event.params.amount, "SUSHI")
+        saveSnapshot(stakePosition, event)
+    }
+
+    let mapId = event.transaction.hash.toHexString()
+    let sushiTxPoolMap = SushiTxPoolMap.load(mapId)
+    if (sushiTxPoolMap === null) {
+        sushiTxPoolMap = new SushiTxPoolMap(mapId)
+    } else if (sushiTxPoolMap.pool != poolAddress) {
+        log.warning("Multiple deposits to different pools in 1 tx - map id collision. Tx hash: "
+            .concat(mapId)
+            .concat(", original map's pool address: ")
+            .concat(sushiTxPoolMap.pool.toHexString())
+            .concat(", new address: ")
+            .concat(poolAddress.toHexString()), [])
+    }
+    sushiTxPoolMap.pool = poolAddress
+    sushiTxPoolMap.save()
 }
 
 export function handleWithdraw(event: Withdraw): void {

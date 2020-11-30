@@ -14,7 +14,9 @@ function updateStakePosition(poolAddress: Address, user: Address, balanceChange:
     let balanceChange_ = balanceChange.toBigDecimal().times(DENOMINATION)
     if (stakePosition === null) {
         if (balanceChange <= BigInt.fromI32(0)) {
-            log.error("Negative balance change on stakePosition creation", [])
+            // User called deposit method with 0 amount
+            log.error("Non-positive balance change on stakePosition creation, id: "
+                .concat(id).concat(", balance change: ").concat(balanceChange_.toString()), [])
         }
         stakePosition = new StakePosition(id)
         stakePosition.exchange = exchange
