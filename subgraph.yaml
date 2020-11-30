@@ -169,9 +169,6 @@ dataSources:
           handler: handleDeposit
         - event: Withdraw(indexed address,indexed uint256,uint256)
           handler: handleWithdraw
-      callHandlers:
-        - function: add(uint256,address,bool)
-          handler: handleAdd
       file: ./src/sushi-mapping.ts
   - kind: ethereum/contract
     name: SushiToken

@@ -1,7 +1,7 @@
 import {Address, BigDecimal, BigInt, log} from "@graphprotocol/graph-ts/index";
 import {StakePosition} from "../generated/schema";
 
-// The coefficient by which I have to multiply to get the basic units of UNI and LP tokens
+// The coefficient by which I have to multiply to get the basic units of UNI, SUSHI and LP tokens
 let DENOMINATION = BigDecimal.fromString("0.000000000000000001")
 
 function updateStakePosition(poolId: Address, user: Address, balanceChange: BigInt, exchange: string): StakePosition {

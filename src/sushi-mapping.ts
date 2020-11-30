@@ -1,29 +1,16 @@
 import {Address, BigInt} from "@graphprotocol/graph-ts/index";
-import {LatestSushiId, Reward, StakePositionSnapshot, SushiPool} from "../generated/schema";
-import {AddCall, Deposit, Withdraw} from "../generated/MasterChef/MasterChef";
+import {Reward, StakePositionSnapshot} from "../generated/schema";
+import {Deposit, Withdraw} from "../generated/MasterChef/MasterChef";
 import {Transfer} from "../generated/SushiToken/ERC20";
 import {DENOMINATION, updateStakePosition} from "./shared";
+import {poolInfo} from "./poolInfo";
 
 let masterChefAddress = Address.fromString("0xc2edad668740f1aa35e4d8f227fb8e17dca888cd")
 
-export function handleAdd(call: AddCall): void {
-    let latestSushiId = LatestSushiId.load("latest")
-    if (latestSushiId === null) {
-        latestSushiId = new LatestSushiId("latest")
-        latestSushiId.pid = BigInt.fromI32(0)
-    } else {
-        latestSushiId.pid = latestSushiId.pid.plus(BigInt.fromI32(1))
-    }
-    let sushiPool = new SushiPool(latestSushiId.pid.toString())
-    sushiPool.address = call.inputs._lpToken
-    sushiPool.save()
-    latestSushiId.save()
-}
-
 export function handleDeposit(event: Deposit): void {
-    let sushiPool = SushiPool.load(event.params.pid.toString())
-    let poolId = <Address> sushiPool.address
-    let stakePosition = updateStakePosition(poolId, event.params.user, event.params.amount, "SUSHI")
+    let pid = event.params.pid.toI32()
+    let poolAddress = Address.fromString(poolInfo[pid])
+    let stakePosition = updateStakePosition(poolAddress, event.params.user, event.params.amount, "SUSHI")
     let snapshot = new StakePositionSnapshot(stakePosition.id.concat(event.logIndex.toString()))
 
     snapshot.exchange = stakePosition.exchange
@@ -40,10 +27,10 @@ export function handleDeposit(event: Deposit): void {
 }
 
 export function handleWithdraw(event: Withdraw): void {
-    let sushiPool = SushiPool.load(event.params.pid.toString())
-    let poolId = <Address> sushiPool.address
+    let pid = event.params.pid.toI32()
+    let poolAddress = Address.fromString(poolInfo[pid])
     let amount = event.params.amount.times(BigInt.fromI32(-1))
-    let stakePosition = updateStakePosition(poolId, event.params.user, amount, "SUSHI")
+    let stakePosition = updateStakePosition(poolAddress, event.params.user, amount, "SUSHI")
     let snapshot = new StakePositionSnapshot(stakePosition.id.concat(event.logIndex.toString()))
 
     snapshot.exchange = stakePosition.exchange
