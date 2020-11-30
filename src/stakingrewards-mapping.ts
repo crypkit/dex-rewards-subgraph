@@ -19,8 +19,18 @@ function getPool(address: Address | null): Address | null {
     if (address == Address.fromString("0xa1484c3aa22a66c62b77e0ae78e15258bd0cb711")) {
         return Address.fromString("0xa478c2975ab1ea89e8196811f51a7b7ade33eb11")
     }
+    if (address == Address.fromString("0x8f06fba4684b5e0988f215a47775bb611af0f986")) {
+        return Address.fromString("0x4d5ef58aac27d99935e5b6b4a6778ff292059991")
+    }
     log.error("Unknown pool address", []);
     return null
+}
+
+function getExchange(address: Address | null): string {
+    if (address == Address.fromString("0x8f06fba4684b5e0988f215a47775bb611af0f986")) {
+        return "INDEX"
+    }
+    return "UNI_V2"
 }
 
 export function handleRewardPaid(event: RewardPaid): void {
@@ -29,7 +39,7 @@ export function handleRewardPaid(event: RewardPaid): void {
         .concat('-')
         .concat(event.logIndex.toString())
     let reward = new Reward(id)
-    reward.exchange = "UNI_V2"
+    reward.exchange = getExchange(event.address)
     reward.pool = getPool(event.address)
     reward.amount = event.params.reward.toBigDecimal().times(DENOMINATION)
     reward.user = event.params.user
@@ -41,13 +51,13 @@ export function handleRewardPaid(event: RewardPaid): void {
 
 export function handleStaked(event: Staked): void {
     let poolId = <Address>getPool(event.address)
-    let stakePosition = updateStakePosition(poolId, event.params.user, event.params.amount, "UNI_V2")
+    let stakePosition = updateStakePosition(poolId, event.params.user, event.params.amount, getExchange(event.address))
     saveSnapshot(stakePosition, event)
 }
 
 export function handleWithdrawn(event: Withdrawn): void {
     let poolId = <Address>getPool(event.address)
     let amount = event.params.amount.times(BigInt.fromI32(-1))
-    let stakePosition = updateStakePosition(poolId, event.params.user, amount, "UNI_V2")
+    let stakePosition = updateStakePosition(poolId, event.params.user, amount, getExchange(event.address))
     saveSnapshot(stakePosition, event)
 }

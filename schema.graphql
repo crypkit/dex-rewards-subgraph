@@ -2,6 +2,7 @@ enum Exchange {
     UNI_V2
     BALANCER
     SUSHI
+    INDEX
 }
 
 type Reward @entity {
