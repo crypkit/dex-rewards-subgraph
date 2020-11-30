@@ -1,29 +1,17 @@
 import {Address, BigInt} from "@graphprotocol/graph-ts/index";
-import {Reward, StakePositionSnapshot} from "../generated/schema";
+import {Reward} from "../generated/schema";
 import {Deposit, Withdraw} from "../generated/MasterChef/MasterChef";
 import {Transfer} from "../generated/SushiToken/ERC20";
-import {DENOMINATION, updateStakePosition} from "./shared";
+import {DENOMINATION, saveSnapshot, updateStakePosition} from "./shared";
 import {poolInfo} from "./poolInfo";
 
-let masterChefAddress = Address.fromString("0xc2edad668740f1aa35e4d8f227fb8e17dca888cd")
+let MASTER_CHEF_ADDRESS = Address.fromString("0xc2edad668740f1aa35e4d8f227fb8e17dca888cd")
 
 export function handleDeposit(event: Deposit): void {
     let pid = event.params.pid.toI32()
     let poolAddress = Address.fromString(poolInfo[pid])
     let stakePosition = updateStakePosition(poolAddress, event.params.user, event.params.amount, "SUSHI")
-    let snapshot = new StakePositionSnapshot(stakePosition.id.concat(event.logIndex.toString()))
-
-    snapshot.exchange = stakePosition.exchange
-    snapshot.user = stakePosition.user
-    snapshot.pool = stakePosition.pool
-    snapshot.liquidityTokenBalance = stakePosition.liquidityTokenBalance
-    snapshot.blockNumber = event.block.number
-    snapshot.blockTimestamp = event.block.timestamp
-    snapshot.txHash = event.transaction.hash
-    snapshot.txGasUsed = event.transaction.gasUsed
-    snapshot.txGasPrice = event.transaction.gasPrice
-
-    snapshot.save()
+    saveSnapshot(stakePosition, event)
 }
 
 export function handleWithdraw(event: Withdraw): void {
@@ -31,23 +19,11 @@ export function handleWithdraw(event: Withdraw): void {
     let poolAddress = Address.fromString(poolInfo[pid])
     let amount = event.params.amount.times(BigInt.fromI32(-1))
     let stakePosition = updateStakePosition(poolAddress, event.params.user, amount, "SUSHI")
-    let snapshot = new StakePositionSnapshot(stakePosition.id.concat(event.logIndex.toString()))
-
-    snapshot.exchange = stakePosition.exchange
-    snapshot.user = stakePosition.user
-    snapshot.pool = stakePosition.pool
-    snapshot.liquidityTokenBalance = stakePosition.liquidityTokenBalance
-    snapshot.blockNumber = event.block.number
-    snapshot.blockTimestamp = event.block.timestamp
-    snapshot.txHash = event.transaction.hash
-    snapshot.txGasUsed = event.transaction.gasUsed
-    snapshot.txGasPrice = event.transaction.gasPrice
-
-    snapshot.save()
+    saveSnapshot(stakePosition, event)
 }
 
 export function handleTransfer(event: Transfer): void {
-    if (event.params.from == masterChefAddress) {
+    if (event.params.from == MASTER_CHEF_ADDRESS) {
         let id = event.params.to
             .toHexString()
             .concat('-')

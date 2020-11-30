@@ -1,7 +1,7 @@
-import {Address, BigDecimal, BigInt, log} from "@graphprotocol/graph-ts"
-import {Reward, StakePosition, StakePositionSnapshot} from "../generated/schema";
+import {Address, BigInt, log} from "@graphprotocol/graph-ts"
+import {Reward} from "../generated/schema";
 import {RewardPaid, Staked, Withdrawn} from "../generated/UniStakingRewardsETH/DAI/StakingRewards";
-import {DENOMINATION, updateStakePosition} from "./shared";
+import {DENOMINATION, saveSnapshot, updateStakePosition} from "./shared";
 
 
 // For some reason I could not get map working properly, so I am using this function
@@ -42,36 +42,12 @@ export function handleRewardPaid(event: RewardPaid): void {
 export function handleStaked(event: Staked): void {
     let poolId = <Address>getPool(event.address)
     let stakePosition = updateStakePosition(poolId, event.params.user, event.params.amount, "UNI_V2")
-    let snapshot = new StakePositionSnapshot(stakePosition.id.concat(event.logIndex.toString()))
-
-    snapshot.exchange = stakePosition.exchange
-    snapshot.user = stakePosition.user
-    snapshot.pool = stakePosition.pool
-    snapshot.liquidityTokenBalance = stakePosition.liquidityTokenBalance
-    snapshot.blockNumber = event.block.number
-    snapshot.blockTimestamp = event.block.timestamp
-    snapshot.txHash = event.transaction.hash
-    snapshot.txGasUsed = event.transaction.gasUsed
-    snapshot.txGasPrice = event.transaction.gasPrice
-
-    snapshot.save()
+    saveSnapshot(stakePosition, event)
 }
 
 export function handleWithdrawn(event: Withdrawn): void {
     let poolId = <Address>getPool(event.address)
     let amount = event.params.amount.times(BigInt.fromI32(-1))
     let stakePosition = updateStakePosition(poolId, event.params.user, amount, "UNI_V2")
-    let snapshot = new StakePositionSnapshot(stakePosition.id.concat(event.logIndex.toString()))
-
-    snapshot.exchange = stakePosition.exchange
-    snapshot.user = stakePosition.user
-    snapshot.pool = stakePosition.pool
-    snapshot.liquidityTokenBalance = stakePosition.liquidityTokenBalance
-    snapshot.blockNumber = event.block.number
-    snapshot.blockTimestamp = event.block.timestamp
-    snapshot.txHash = event.transaction.hash
-    snapshot.txGasUsed = event.transaction.gasUsed
-    snapshot.txGasPrice = event.transaction.gasPrice
-
-    snapshot.save()
+    saveSnapshot(stakePosition, event)
 }
