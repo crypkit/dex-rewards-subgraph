@@ -51,14 +51,24 @@ export function handleRewardPaid(event: RewardPaid): void {
 }
 
 export function handleStaked(event: Staked): void {
-    let poolId = <Address>getPool(event.address)
-    let stakePosition = updateStakePosition(poolId, event.params.user, event.params.amount, "UNI_V2", getStakingService(event.address))
+    let poolAddress = <Address>getPool(event.address)
+    let user = event.params.user
+    let id = poolAddress
+        .toHexString()
+        .concat('-')
+        .concat(user.toHexString())
+    let stakePosition = updateStakePosition(id, poolAddress, user, event.params.amount, "UNI_V2", getStakingService(event.address))
     saveSnapshot(stakePosition, event)
 }
 
 export function handleWithdrawn(event: Withdrawn): void {
-    let poolId = <Address>getPool(event.address)
+    let poolAddress = <Address>getPool(event.address)
     let amount = event.params.amount.times(BigInt.fromI32(-1))
-    let stakePosition = updateStakePosition(poolId, event.params.user, amount, "UNI_V2", getStakingService(event.address))
+    let user = event.params.user
+    let id = poolAddress
+        .toHexString()
+        .concat('-')
+        .concat(user.toHexString())
+    let stakePosition = updateStakePosition(id, poolAddress, user, amount, "UNI_V2", getStakingService(event.address))
     saveSnapshot(stakePosition, event)
 }

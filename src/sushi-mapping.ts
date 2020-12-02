@@ -25,13 +25,18 @@ function getExchange(pairAddress: Address): string {
 export function handleDeposit(event: Deposit): void {
     let poolAddress = getAddress(event.params.pid)
     let exchange = getExchange(poolAddress)
+    let user = event.params.user
+    let id = event.params.pid
+        .toString()
+        .concat('-')
+        .concat(user.toHexString())
     // There is a lot of deposit calls with 0 amounts because users use this method to claim rewards
     if (!event.params.amount.equals(BigInt.fromI32(0))) {
-        let stakePosition = updateStakePosition(poolAddress, event.params.user, event.params.amount, exchange, "SUSHI")
+        let stakePosition = updateStakePosition(id, poolAddress, user, event.params.amount, exchange, "SUSHI")
         saveSnapshot(stakePosition, event)
     }
 
-    let id = event.transaction.hash.toHexString()
+    id = event.transaction.hash.toHexString()
     let reward = Reward.load(id)
     if (reward !== null) {
         // This scenario occurs, when there was no reward paid out during deposit
@@ -44,10 +49,16 @@ export function handleDeposit(event: Deposit): void {
 export function handleWithdraw(event: Withdraw): void {
     let poolAddress = getAddress(event.params.pid)
     let exchange = getExchange(poolAddress)
+    let user = event.params.user
+    let id = event.params.pid
+        .toString()
+        .concat('-')
+        .concat(user.toHexString())
     let amount = event.params.amount.times(BigInt.fromI32(-1))
-    let stakePosition = updateStakePosition(poolAddress, event.params.user, amount, exchange, "SUSHI")
+    let stakePosition = updateStakePosition(id, poolAddress, event.params.user, amount, exchange, "SUSHI")
     saveSnapshot(stakePosition, event)
-    let id = event.transaction.hash.toHexString()
+
+    id = event.transaction.hash.toHexString()
     let reward = Reward.load(id)
     if (reward !== null) {
         // This scenario occurs, when there was no reward paid out during deposit

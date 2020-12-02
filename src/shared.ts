@@ -5,26 +5,26 @@ import {StakePosition, StakePositionSnapshot} from "../generated/schema";
 // The coefficient by which I have to multiply to get the basic units of UNI, SUSHI and LP tokens
 let DENOMINATION = BigDecimal.fromString("0.000000000000000001")
 
-function updateStakePosition(poolAddress: Address, user: Address, balanceChange: BigInt, exchange: string, stakingService: string): StakePosition {
-    let id = poolAddress
-        .toHexString()
-        .concat('-')
-        .concat(user.toHexString())
-    let stakePosition = StakePosition.load(id)
+function updateStakePosition(positionId: string, poolAddress: Address, user: Address, balanceChange: BigInt, exchange: string, stakingService: string): StakePosition {
+    let stakePosition = StakePosition.load(positionId)
     let balanceChange_ = balanceChange.toBigDecimal().times(DENOMINATION)
     if (stakePosition === null) {
         if (balanceChange <= BigInt.fromI32(0)) {
             // User called deposit method with 0 amount
             log.error("Non-positive balance change on stakePosition creation, id: "
-                .concat(id).concat(", balance change: ").concat(balanceChange_.toString()), [])
+                .concat(positionId).concat(", balance change: ").concat(balanceChange_.toString()), [])
         }
-        stakePosition = new StakePosition(id)
+        stakePosition = new StakePosition(positionId)
         stakePosition.exchange = exchange
         stakePosition.stakingService = stakingService
         stakePosition.user = user
         stakePosition.pool = poolAddress
         stakePosition.liquidityTokenBalance = balanceChange_
     } else {
+        // The follwing 2 lines are here, because of migrations in Sushi
+        // (the 2 parameters can change for the same user position)
+        stakePosition.exchange = exchange
+        stakePosition.pool = poolAddress
         stakePosition.liquidityTokenBalance = stakePosition.liquidityTokenBalance.plus(balanceChange_)
     }
     stakePosition.save()
