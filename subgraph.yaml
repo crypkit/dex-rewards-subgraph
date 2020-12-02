@@ -190,6 +190,8 @@ dataSources:
       abis:
         - name: MasterChef
           file: ./abis/masterchef.json
+        - name: Pair
+          file: ./abis/pair.json
       eventHandlers:
         - event: Deposit(indexed address,indexed uint256,uint256)
           handler: handleDeposit
