@@ -6,6 +6,7 @@ import {DENOMINATION, saveSnapshot, updateStakePosition} from "./shared";
 import {Pair as PairContract} from "../generated/MasterChef/Pair"
 
 let MASTER_CHEF_ADDRESS = Address.fromString("0xc2edad668740f1aa35e4d8f227fb8e17dca888cd")
+let UNISWAP_FACTORY = Address.fromString("0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f")
 
 function getAddress(pid: BigInt): Address {
     let contract = MasterChef.bind(MASTER_CHEF_ADDRESS)
@@ -14,8 +15,8 @@ function getAddress(pid: BigInt): Address {
 
 function getExchange(pairAddress: Address): string {
     let contract = PairContract.bind(pairAddress)
-    let factory = contract.factory().toString()
-    if (factory === '0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f') {
+    let factory = Address.fromHexString(contract.factory().toHexString())
+    if (factory.equals(UNISWAP_FACTORY)) {
         return "UNI_V2"
     }
     return "SUSHI"
