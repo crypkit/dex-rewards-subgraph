@@ -2,12 +2,18 @@ enum Exchange {
     UNI_V2
     BALANCER
     SUSHI
+}
+
+enum StakingService {
+    UNI_V2
+    SUSHI
     INDEX
 }
 
 type Reward @entity {
     id: ID! # {user_address}-{log_index} in UNI_V2 and BALANCER, {txHash} in Sushi
     exchange: Exchange!
+    stakingService: StakingService # not mandatory, because in Balancer the LP tokens are not staked
     pool: Bytes # pool address - null in Balancer because I am not able to
     #  distinguish between specific user pools
     amount: BigDecimal!
@@ -21,6 +27,7 @@ type Reward @entity {
 type StakePosition @entity {
     id: ID! # {pool_address}-{user_address}
     exchange: Exchange!
+    stakingService: StakingService!
     user: Bytes!
     pool: Bytes!
     liquidityTokenBalance: BigDecimal!
@@ -29,6 +36,7 @@ type StakePosition @entity {
 type StakePositionSnapshot @entity {
     id: ID! # {pool_address}-{user_address}-{log_index}
     exchange: Exchange!
+    stakingService: StakingService!
     user: Bytes!
     pool: Bytes!
     liquidityTokenBalance: BigDecimal!

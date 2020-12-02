@@ -12,7 +12,7 @@ export function handleDeposit(event: Deposit): void {
     let poolAddress = Address.fromString(poolInfo[pid])
     // There is a lot of deposit calls with 0 amounts because users use this method to claim rewards
     if (!event.params.amount.equals(BigInt.fromI32(0))) {
-        let stakePosition = updateStakePosition(poolAddress, event.params.user, event.params.amount, "SUSHI")
+        let stakePosition = updateStakePosition(poolAddress, event.params.user, event.params.amount, "SUSHI", "SUSHI")
         saveSnapshot(stakePosition, event)
     }
 
@@ -29,7 +29,7 @@ export function handleWithdraw(event: Withdraw): void {
     let pid = event.params.pid.toI32()
     let poolAddress = Address.fromString(poolInfo[pid])
     let amount = event.params.amount.times(BigInt.fromI32(-1))
-    let stakePosition = updateStakePosition(poolAddress, event.params.user, amount, "SUSHI")
+    let stakePosition = updateStakePosition(poolAddress, event.params.user, amount, "SUSHI", "SUSHI")
     saveSnapshot(stakePosition, event)
     let id = event.transaction.hash.toHexString()
     let reward = Reward.load(id)
