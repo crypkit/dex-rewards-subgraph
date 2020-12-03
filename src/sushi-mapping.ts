@@ -13,9 +13,14 @@ function getAddress(pid: BigInt): Address {
     return contract.poolInfo(pid).value0
 }
 
-function getExchange(pairAddress: Address): string {
+function getExchange(pairAddress: Address): string | null {
     let contract = PairContract.bind(pairAddress)
-    let factory = Address.fromHexString(contract.factory().toHexString())
+    let result = contract.try_factory()
+    if (result.reverted) {
+        log.warning("Factory call on pair contract ".concat(pairAddress.toHexString()).concat(" reverted."), [])
+        return null
+    }
+    let factory = Address.fromHexString(result.value.toHexString())
     if (factory.equals(UNISWAP_FACTORY)) {
         return "UNI_V2"
     }
@@ -25,6 +30,9 @@ function getExchange(pairAddress: Address): string {
 export function handleDeposit(event: Deposit): void {
     let poolAddress = getAddress(event.params.pid)
     let exchange = getExchange(poolAddress)
+    if (exchange === null) {
+        return
+    }
     let user = event.params.user
     let id = event.params.pid
         .toString()
@@ -49,6 +57,9 @@ export function handleDeposit(event: Deposit): void {
 export function handleWithdraw(event: Withdraw): void {
     let poolAddress = getAddress(event.params.pid)
     let exchange = getExchange(poolAddress)
+    if (exchange === null) {
+        return
+    }
     let user = event.params.user
     let id = event.params.pid
         .toString()
