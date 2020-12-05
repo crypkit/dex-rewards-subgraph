@@ -32,7 +32,12 @@ function updateStakePosition(positionId: string, poolAddress: Address, user: Add
 }
 
 function saveSnapshot(stakePosition: StakePosition, event: ethereum.Event): void {
-    let snapshot = new StakePositionSnapshot(stakePosition.id.concat(event.logIndex.toString()))
+    let id = stakePosition.id
+        .concat("-")
+        .concat(event.transaction.hash.toHexString())
+        .concat("-")
+        .concat(event.logIndex.toString())
+    let snapshot = new StakePositionSnapshot(id)
 
     snapshot.exchange = stakePosition.exchange
     snapshot.stakingService = stakePosition.stakingService
