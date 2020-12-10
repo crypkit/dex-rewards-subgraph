@@ -22,6 +22,9 @@ function getPool(address: Address | null): Address | null {
     if (address == Address.fromString("0x8f06fba4684b5e0988f215a47775bb611af0f986")) {
         return Address.fromString("0x4d5ef58aac27d99935e5b6b4a6778ff292059991")
     }
+    if (address == Address.fromString("0xB93b505Ed567982E2b6756177ddD23ab5745f309")) {
+        return Address.fromString("0x4d5ef58aac27d99935e5b6b4a6778ff292059991")
+    }
     log.error("Unknown pool address", []);
     return null
 }
