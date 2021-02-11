@@ -1,39 +1,50 @@
 enum Exchange {
-  UNI_V2
-  BALANCER
+    UNI_V2
+    BALANCER
+    SUSHI
+}
+
+enum StakingService {
+    UNI_V2
+    BALANCER
+    SUSHI
+    INDEX
 }
 
 type Reward @entity {
-  id: ID! # {user_address}-{log_index}
-  exchange: Exchange!
-  pool: Bytes # pool address - null in Balancer because I am not able to
-#  distinguish between specific user pools
-  amount: BigDecimal!
-  user: Bytes!
-  transaction: Bytes! # tx hash
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
+    id: ID! # {user_address}-{log_index} in UNI_V2 and BALANCER, {txHash} in Sushi
+    exchange: Exchange!
+    stakingService: StakingService!
+    pool: Bytes # pool address - null in Balancer because I am not able to
+    #  distinguish between specific user pools
+    amount: BigDecimal!
+    user: Bytes!
+    transaction: Bytes! # tx hash
+    blockNumber: BigInt!
+    blockTimestamp: BigInt!
 }
 
 # The following are only for Uniswap
 type StakePosition @entity {
-  id: ID! # {pool_address}-{user_address}
-  exchange: Exchange!
-  user: Bytes!
-  pool: Bytes!
-  liquidityTokenBalance: BigDecimal!
+    id: ID! # {pool_address}-{user_address}
+    exchange: Exchange!
+    stakingService: StakingService!
+    user: Bytes!
+    pool: Bytes!
+    liquidityTokenBalance: BigDecimal!
 }
 
 type StakePositionSnapshot @entity {
-  id: ID! # {pool_address}-{user_address}-{log_index}
-  exchange: Exchange!
-  user: Bytes!
-  pool: Bytes!
-  liquidityTokenBalance: BigDecimal!
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  # Allows for computing gas costs:
-  txHash: Bytes!
-  txGasUsed: BigInt!
-  txGasPrice: BigInt!
+    id: ID! # {pool_address}-{user_address}-{log_index}
+    exchange: Exchange!
+    stakingService: StakingService!
+    user: Bytes!
+    pool: Bytes!
+    liquidityTokenBalance: BigDecimal!
+    blockNumber: BigInt!
+    blockTimestamp: BigInt!
+    # Allows for computing gas costs:
+    txHash: Bytes!
+    txGasUsed: BigInt!
+    txGasPrice: BigInt!
 }

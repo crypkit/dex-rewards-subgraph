@@ -20,6 +20,7 @@ export function handleTransfer(event: Transfer): void {
             .concat(event.logIndex.toString())
         let reward = new Reward(id)
         reward.exchange = "BALANCER"
+        reward.stakingService = "BALANCER"
         reward.amount = event.params.value.toBigDecimal().times(DENOMINATION)
         reward.user = event.params.to
         reward.transaction = event.transaction.hash
@@ -38,6 +39,7 @@ export function handleClaimed(event: Claimed): void {
         .concat(event.logIndex.toString())
     let reward = new Reward(id)
     reward.exchange = "BALANCER"
+    reward.stakingService = "BALANCER"
     reward.amount = event.params._balance.toBigDecimal().times(DENOMINATION)
     reward.user = event.params._claimant
     reward.transaction = event.transaction.hash
